@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Davax AI | Hiperautomatización, Agentes IA Autónomos y RPA</title>
+    <!-- Tailwind CSS para diseño responsivo y moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#05070F',
+                        cardBg: '#0E1326',
+                        borderGray: '#1E294B',
+                        neonBlue: '#00F0FF',
+                        neonPurple: '#9400D3',
+                        whatsappGreen: '#25D366',
+                        neonRed: '#FF3B30',
+                        neonGreen: '#39FF14'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #00F0FF 0%, #9400D3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glow-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 240, 255, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(0, 240, 255, 0.15);
+        }
+        .glow-whatsapp {
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        /* ANIMACIONES LOGO IA AL ARRANCAR */
+        @keyframes aiPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(0,240,255,0.6)); }
+            50% { transform: scale(1.08); filter: drop-shadow(0 0 35px rgba(148,0,211,0.9)); }
+        }
+        @keyframes scanline {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+        @keyframes orbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-ai-logo { animation: aiPulse 2.5s ease-in-out infinite; }
+        .animate-orbit-1 { animation: orbit 8s linear infinite; }
+        .animate-orbit-2 { animation: orbit 12s linear infinite reverse; }
+        
+        /* Preloader Screen Style */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: #03050A;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.05);
+        }
+        .scanner-effect::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent, rgba(0,240,255,0.2), transparent);
+            animation: scanline 2s linear infinite;
+        }
+
+        /* CAPTCHA */
+        #captcha-canvas {
+            display: block;
+            border-radius: 10px;
+            border: 1px solid #1E294B;
+        }
+        #captcha-input {
+            letter-spacing: 0.25em;
+        }
+        #captcha-input:focus {
+            border-color: #00F0FF;
+            box-shadow: 0 0 0 2px rgba(0,240,255,0.1);
+        }
+        .captcha-ok   { border-color: #39FF14 !important; box-shadow: 0 0 0 2px rgba(57,255,20,0.1) !important; }
+        .captcha-fail { border-color: #FF3B30 !important; box-shadow: 0 0 0 2px rgba(255,59,48,0.1) !important; }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-100 font-sans antialiased selection:bg-neonBlue selection:text-darkBg opacity-0 transition-opacity duration-700" id="main-body">
+
+    <!-- INTRO DE INTELIGENCIA ARTIFICIAL DESPLEGÁNDOSE (PRELOADER) -->
+    <div id="preloader" class="scanner-effect">
+        <div class="relative flex flex-col items-center">
+            <!-- Isotipo de IA Davax Interconectado -->
+            <div class="w-32 h-32 relative mb-6 animate-ai-logo flex items-center justify-center">
+                <!-- Órbita de Datos Exterior -->
+                <svg class="absolute inset-0 w-full h-full animate-orbit-1" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" stroke="url(#cyan-purple-grad)" stroke-width="1.5" fill="none" stroke-dasharray="10 25 40 10"/>
+                    <circle cx="94" cy="50" r="3" fill="#00F0FF"/>
+                </svg>
+                <!-- Órbita de Datos Interior -->
+                <svg class="absolute inset-0 w-full h-full p-3 animate-orbit-2" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" stroke="#00F0FF" stroke-width="1" fill="none" stroke-dasharray="5 15"/>
+                    <circle cx="50" cy="8" r="2.5" fill="#9400D3"/>
+                </svg>
+                <!-- Núcleo de Cómputo Cognitivo -->
+                <div class="w-14 h-14 bg-gradient-to-tr from-darkBg to-cardBg border border-neonBlue rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <svg class="w-7 h-7 text-neonBlue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Tipografía de la Marca Desplegándose -->
+            <div class="text-3xl font-black tracking-[0.25em] text-white flex items-center">
+                DAVA<span class="text-neonBlue">X</span>
+            </div>
+            <div class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold mt-2">
+                Inicializando Capas de Agentes IA...
+            </div>
+        </div>
+    </div>
+
+    <!-- MOTOR DE AUDIO AVANZADO CON CONTROL DE DETENCIÓN GLOBAL -->
+    <script>
+        // Control de despliegue al arrancar
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                const body = document.getElementById('main-body');
+                preloader.classList.add('fade-out');
+                body.classList.remove('opacity-0');
+            }, 2400);
+            generarCaptcha();
+        });
+
+        /* ── CAPTCHA ── */
+        let captchaCode = '';
+
+        function generarCaptcha() {
+            // Sin caracteres ambiguos (0/O, 1/I/L)
+            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+            captchaCode = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+            dibujarCaptcha(captchaCode);
+            const inp = document.getElementById('captcha-input');
+            if (inp) {
+                inp.value = '';
+                inp.className = inp.className.replace(/captcha-ok|captcha-fail/g, '').trim();
+            }
+            const err = document.getElementById('captcha-error');
+            if (err) err.classList.add('hidden');
+        }
+
+        function dibujarCaptcha(code) {
+            const canvas = document.getElementById('captcha-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+
+            // Fondo
+            ctx.fillStyle = '#05070F';
+            ctx.fillRect(0, 0, W, H);
+
+            // Líneas de ruido
+            for (let i = 0; i < 7; i++) {
+                ctx.beginPath();
+                ctx.strokeStyle = Math.random() > 0.5
+                    ? `rgba(0,240,255,${0.08 + Math.random() * 0.14})`
+                    : `rgba(148,0,211,${0.08 + Math.random() * 0.14})`;
+                ctx.lineWidth = 0.7 + Math.random();
+                ctx.moveTo(Math.random() * W, Math.random() * H);
+                ctx.bezierCurveTo(
+                    Math.random() * W, Math.random() * H,
+                    Math.random() * W, Math.random() * H,
+                    Math.random() * W, Math.random() * H
+                );
+                ctx.stroke();
+            }
+
+            // Puntos de ruido
+            for (let i = 0; i < 40; i++) {
+                ctx.fillStyle = `rgba(255,255,255,${0.03 + Math.random() * 0.08})`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * W, Math.random() * H, Math.random() * 1.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Caracteres
+            const palette = ['#00F0FF', '#B060FF', '#FFFFFF', '#00F0FF'];
+            const slotW = W / 4.6;
+            for (let i = 0; i < code.length; i++) {
+                ctx.save();
+                const x = slotW * i + slotW * 0.9;
+                const y = H / 2 + 7;
+                ctx.translate(x, y);
+                ctx.rotate((Math.random() - 0.5) * 0.45);
+                const size = 20 + Math.floor(Math.random() * 5);
+                ctx.font = `900 ${size}px 'Courier New', monospace`;
+                ctx.fillStyle = palette[i % palette.length];
+                ctx.shadowColor = palette[i % palette.length];
+                ctx.shadowBlur = 10;
+                ctx.fillText(code[i], 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function validarCaptchaInput(inp) {
+            inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            inp.classList.remove('captcha-ok', 'captcha-fail');
+            const err = document.getElementById('captcha-error');
+            if (inp.value.length === 4) {
+                if (inp.value === captchaCode) {
+                    inp.classList.add('captcha-ok');
+                    if (err) err.classList.add('hidden');
+                } else {
+                    inp.classList.add('captcha-fail');
+                }
+            } else {
+                if (err) err.classList.add('hidden');
+            }
+        }
+
+        function enviarFormulario(e) {
+            e.preventDefault();
+            const inp = document.getElementById('captcha-input');
+            const err = document.getElementById('captcha-error');
+            if (!inp || inp.value.toUpperCase() !== captchaCode) {
+                inp.classList.remove('captcha-ok');
+                inp.classList.add('captcha-fail');
+                if (err) err.classList.remove('hidden');
+                generarCaptcha();
+                return;
+            }
+            if (err) err.classList.add('hidden');
+            alert('Solicitud procesada con éxito por el motor central Davax.');
+            e.target.reset();
+            generarCaptcha();
+        }
+
+        function playUiSound(isStop = false) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                const startFreq = isStop ? 440 : 880;
+                const endFreq = isStop ? 220 : 440;
+                
+                oscillator.frequency.setValueAtTime(startFreq, audioCtx.currentTime); 
+                oscillator.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.1);
+            } catch (e) { console.log("AudioContext listo."); }
+        }
+
+        let activeGroupId = null;
+
+        function toggleBotones(groupId, reproduciendo) {
+            const btnEscuchar = document.getElementById('escuchar-' + groupId);
+            const btnDetener  = document.getElementById('detener-'  + groupId);
+            if (!btnEscuchar || !btnDetener) return;
+            if (reproduciendo) {
+                btnEscuchar.classList.add('hidden');
+                btnDetener.classList.remove('hidden');
+            } else {
+                btnDetener.classList.add('hidden');
+                btnEscuchar.classList.remove('hidden');
+            }
+        }
+
+        function narrarCaso(texto, groupId) {
+            // Resetear el grupo activo anterior si es diferente
+            if (activeGroupId && activeGroupId !== groupId) {
+                toggleBotones(activeGroupId, false);
+            }
+            activeGroupId = groupId;
+            toggleBotones(groupId, true);
+
+            playUiSound(false);
+            if (!('speechSynthesis' in window)) return;
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(texto);
+            const voices = window.speechSynthesis.getVoices();
+
+            let vozColombiana = voices.find(v =>
+                v.lang.replace('_', '-').toLowerCase() === 'es-co' &&
+                (v.name.includes('Neural') || v.name.includes('Natural') || v.name.includes('Salomé') || v.name.includes('Gonzalo'))
+            );
+
+            if (!vozColombiana) {
+                vozColombiana = voices.find(v => v.lang.replace('_', '-').toLowerCase() === 'es-co');
+            }
+
+            if (vozColombiana) {
+                utterance.voice = vozColombiana;
+            } else {
+                utterance.lang = 'es-CO';
+            }
+
+            utterance.rate  = 0.94;
+            utterance.pitch = 1.02;
+
+            // Al terminar la narración volver al estado inicial
+            utterance.onend = () => {
+                toggleBotones(groupId, false);
+                activeGroupId = null;
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function detenerVoz(groupId) {
+            playUiSound(true);
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            toggleBotones(groupId, false);
+            activeGroupId = null;
+        }
+    </script>
+
+    <!-- PALETA DE DEGRADADOS GLOBALES SVG -->
+    <svg class="absolute w-0 h-0" width="0" height="0">
+        <defs>
+            <linearGradient id="cyan-purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00F0FF" />
+                <stop offset="100%" stop-color="#9400D3" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- BOTÓN FLOTANTE DE WHATSAPP -->
+    <a href="https://wa.me/573169316077?text=Hola%20Luz%20Marina,%20quiero%20conocer%20las%20soluciones%20en%20IA%20y%20Automatizaci%C3%B3n%20de%20Davax.%20Me%20gustar%C3%ADa%20agendar%20una%20reuni%C3%B3n." 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="fixed bottom-6 right-6 z-50 bg-whatsappGreen text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center glow-whatsapp"
+       onclick="playUiSound(false)">
+        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 11.95.01c3.178.001 6.165 1.24 8.409 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.602-5.339 11.941-11.89 11.941-2.006-.001-3.98-.507-5.731-1.472L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.863-9.742.002-2.596-1.01-5.036-2.852-6.882C16.639 2.128 14.191 1.113 11.59 1.113c-5.443 0-9.864 4.379-9.868 9.753-.001 1.714.453 3.39 1.314 4.873L1.97 20.377l4.677-1.223zm11.466-6.343c-.287-.144-1.702-.841-1.965-.937-.264-.096-.456-.144-.647.144-.192.288-.744.937-.912 1.129-.167.192-.335.216-.622.072-.287-.144-1.215-.447-2.316-1.43-1.554-1.385-1.503-1.637-1.505-1.631-.002-.006.223-.264.335-.396.112-.132.144-.227.215-.378.072-.151.036-.284-.018-.392-.054-.108-.456-1.102-.626-1.512-.165-.399-.333-.345-.456-.351-.118-.006-.253-.007-.389-.007-.136 0-.358.051-.546.256-.188.205-.718.702-.718 1.713 0 1.011.734 1.986.836 2.122.102.136 1.444 2.206 3.498 3.091.488.21 1.026.348 1.428.474.52.165 1.015.141 1.397.084.425-.063 1.303-.532 1.487-1.047.184-.514.184-.956.13-.108-.055-.061-.203-.145-.49-.289z"/></svg>
+    </a>
+
+    <!-- NAV BAR CON MARCA DAVAX INTEGRADA -->
+    <header class="fixed top-0 w-full z-40 bg-darkBg/90 backdrop-blur-md border-b border-borderGray">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            
+            <!-- LOGO CORPORATIVO DAVAX -->
+            <div class="flex items-center gap-3 group cursor-pointer">
+                <div class="w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-neonBlue to-neonPurple rounded-xl shadow-lg shadow-cyan-500/10 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 text-darkBg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="text-xl font-black tracking-wider text-white transition-colors duration-300">
+                    DAVA<span class="text-neonBlue group-hover:text-white transition-colors">X</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex space-x-8 text-sm font-medium tracking-wide text-gray-400">
+                <a href="#productos" class="hover:text-neonBlue transition-colors">Soluciones e Impacto</a>
+                <a href="#conocimiento" class="hover:text-neonBlue transition-colors">Tecnología Base</a>
+                <a href="#contacto" class="hover:text-neonBlue transition-colors">Contacto Directo</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(0,240,255,0.07),transparent_60%)]"></div>
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-cardBg text-neonBlue border border-borderGray mb-8">
+                <span class="w-2 h-2 rounded-full bg-neonBlue animate-pulse"></span> Ecosistema de Automatización Omnicanal Avanzada
+            </span>
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 leading-tight">
+                Llevamos tu Empresa hacia la <br><span class="gradient-text">Hiperautomatización con Davax</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+                Orquestamos flujos de automatización integrando capas de agentes autónomos, análisis conversacional y automatización robótica avanzada para tu backoffice.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#productos" class="px-8 py-4 bg-gradient-to-r from-neonBlue to-neonPurple text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-all transform hover:-translate-y-0.5 block text-center" onclick="playUiSound(false)">Explorar Casos de Éxito</a>
+                <a href="#conocimiento" class="px-8 py-4 bg-cardBg hover:bg-gray-800 text-gray-200 font-semibold rounded-xl border border-borderGray transition-colors flex items-center justify-center" onclick="playUiSound(false)">Ver Marco Tecnológico</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE PRODUCTOS Y SERVICIOS -->
+    <section id="productos" class="py-24 bg-darkBg relative border-t border-borderGray">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center mb-16">
+                <span class="text-xs font-bold uppercase tracking-widest text-neonBlue block mb-2">PORTAFOLIO DE PRODUCCIÓN</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Nuestras Cuatro Soluciones de Alto Impacto</h2>
+            </div>
+
+            <div class="space-y-16">
+                
+                <!-- SOLUCIÓN 01 - AGENTES IA AUTÓNOMOS -->
+                <div class="bg-cardBg rounded-3xl border border-borderGray p-8 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center glow-card">
+                    <div class="lg:col-span-7 space-y-5">
+                        <span class="text-xs font-bold text-neonBlue uppercase tracking-widest">Solución 01</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Agentes de Inteligencia Artificial Autónomos</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Diseñamos sistemas cognitivos con capacidad de planificar y resolver de forma autónoma. Reciben solicitudes de clientes, interpretan la intención del usuario, acceden de manera segura a bases de datos mediante APIs corporativas y ejecutan transacciones complejas sin supervisión humana.
+                        </p>
+                        <div class="p-4 bg-darkBg/60 rounded-xl border border-borderGray">
+                            <h4 class="text-xs font-bold text-neonBlue uppercase mb-1">Caso de Éxito Real: Finanzas Multicanal</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Un banco líder implementó los Agentes IA de Davax para la radicación y aprobación inmediata de créditos de consumo. El agente recibe los documentos del cliente por canales digitales, valida el perfil crediticio en tiempo real mediante APIs y desembolsa de manera autónoma, reduciendo el ciclo de 3 días a solo 4 minutos.
+                            </p>
+                        </div>
+                        
+                        <!-- KPIs -->
+                        <div class="grid grid-cols-3 gap-4 p-4 bg-darkBg/40 border border-borderGray/60 rounded-xl">
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">99.8%</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Precisión API</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">4 Min</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Tiempo Total</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">-93%</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Espera Cliente</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <button id="escuchar-1" onclick="narrarCaso('Solución uno. Agentes de Inteligencia Artificial Autónomos de Davax. En nuestro caso de éxito real del sector financiero, el agente aprueba créditos de consumo en solo cuatro minutos reduciendo la espera en un noventa y tres por ciento.', '1')" 
+                                    class="px-5 py-3 bg-darkBg border border-borderGray hover:border-neonBlue text-neonBlue text-xs font-bold rounded-xl transition-colors flex items-center gap-2">
+                                🔊 Escuchar Caso e Indicadores
+                            </button>
+                            <button id="detener-1" onclick="detenerVoz('1')" 
+                                    class="hidden px-4 py-3 bg-darkBg border border-borderGray hover:border-neonRed hover:text-neonRed text-gray-400 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5">
+                                ⏹️ Detener
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 aspect-video bg-darkBg rounded-2xl overflow-hidden border border-borderGray">
+                        <iframe class="w-full h-full opacity-80" src="https://www.youtube.com/embed/dQw4w9WgXcQ?mute=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- SOLUCIÓN 2: SPEECH ANALYTICS -->
+                <div class="bg-cardBg rounded-3xl border border-borderGray p-8 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center glow-card">
+                    <div class="lg:col-span-7 space-y-5">
+                        <span class="text-xs font-bold text-neonPurple uppercase tracking-widest">Solución 02</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Speech Analytics e Inteligencia de Audio</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Procesamos masivamente las llamadas grabadas o en vivo de tu Contact Center, aplicando modelos avanzados de transcripción fonética y análisis de sentimiento automatizado para identificar riesgos de fuga y oportunidades comerciales.
+                        </p>
+                        <div class="p-4 bg-darkBg/60 rounded-xl border border-borderGray">
+                            <h4 class="text-xs font-bold text-neonPurple uppercase mb-1">Caso de Éxito Real: Sector Telecomunicaciones</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Una multinacional de telecomunicaciones analizó más de un millón de minutos de audio semanales con la tecnología Davax. Se logró automatizar el cien por ciento de las auditorías de calidad y detectar palabras clave de insatisfacción, incrementando la retención de clientes en un veintidós por ciento.
+                            </p>
+                        </div>
+
+                        <!-- KPIs -->
+                        <div class="grid grid-cols-3 gap-4 p-4 bg-darkBg/40 border border-borderGray/60 rounded-xl">
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">100%</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Auditoría Voz</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">+22%</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Retención</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">1M+</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Minutos / Semana</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <button id="escuchar-2" onclick="narrarCaso('Solución dos. Speech Analytics e Inteligencia de Audio por Davax. En nuestro caso de telecomunicaciones, los kpis demuestran una auditoría automatizada del cien por ciento de las llamadas grabadas.', '2')" 
+                                    class="px-5 py-3 bg-darkBg border border-borderGray hover:border-neonPurple text-neonPurple text-xs font-bold rounded-xl transition-colors flex items-center gap-2">
+                                🔊 Escuchar Caso e Indicadores
+                            </button>
+                            <button id="detener-2" onclick="detenerVoz('2')" 
+                                    class="hidden px-4 py-3 bg-darkBg border border-borderGray hover:border-neonRed hover:text-neonRed text-gray-400 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5">
+                                ⏹️ Detener
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 aspect-video bg-darkBg rounded-2xl overflow-hidden border border-borderGray">
+                        <iframe class="w-full h-full opacity-80" src="https://www.youtube.com/embed/dQw4w9WgXcQ?mute=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- SOLUCIÓN 3: AUTOMATIZACIÓN RPA -->
+                <div class="bg-cardBg rounded-3xl border border-borderGray p-8 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center glow-card">
+                    <div class="lg:col-span-7 space-y-5">
+                        <span class="text-xs font-bold text-neonBlue uppercase tracking-widest">Solución 03</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Automatización Robótica de Procesos (RPA)</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Desplegamos robots de software (bots digitales) encargados de realizar tareas operativas, manuales y repetitivas sobre tus plataformas contables, ERPs o sistemas legados, garantizando velocidad y cero errores de digitación.
+                        </p>
+                        <div class="p-4 bg-darkBg/60 rounded-xl border border-borderGray">
+                            <h4 class="text-xs font-bold text-neonBlue uppercase mb-1">Caso de Éxito Real: Operación Logística y Salud</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Un importante operador de salud implementó la fuerza digital de Davax con diez robots para procesar la facturación y validación de copagos médicos. El tiempo de procesamiento por factura bajó de doce minutos a quince segundos.
+                            </p>
+                        </div>
+
+                        <!-- KPIs -->
+                        <div class="grid grid-cols-3 gap-4 p-4 bg-darkBg/40 border border-borderGray/60 rounded-xl">
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">15 Seg</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Por Factura</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">0%</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Error Humano</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">10x</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Bots Activos</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <button id="escuchar-3" onclick="narrarCaso('Solución tres. Automatización Robótica de Procesos de Davax. En la operación de salud, los indicadores clave reflejan un tiempo de procesamiento récord de quince segundos por factura.', '3')" 
+                                    class="px-5 py-3 bg-darkBg border border-borderGray hover:border-neonBlue text-neonBlue text-xs font-bold rounded-xl transition-colors flex items-center gap-2">
+                                🔊 Escuchar Caso e Indicadores
+                            </button>
+                            <button id="detener-3" onclick="detenerVoz('3')" 
+                                    class="hidden px-4 py-3 bg-darkBg border border-borderGray hover:border-neonRed hover:text-neonRed text-gray-400 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5">
+                                ⏹️ Detener
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 aspect-video bg-darkBg rounded-2xl overflow-hidden border border-borderGray">
+                        <iframe class="w-full h-full opacity-80" src="https://www.youtube.com/embed/dQw4w9WgXcQ?mute=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- SOLUCIÓN 04 - CHATBOTS OMNICANALES -->
+                <div class="bg-cardBg rounded-3xl border border-borderGray p-8 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center glow-card">
+                    <div class="lg:col-span-7 space-y-5">
+                        <span class="text-xs font-bold text-neonPurple uppercase tracking-widest">Solución 04</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Chatbots Omnicanal para Gestión de Solicitudes</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Transformamos los canales preferidos de tus clientes (como WhatsApp, Web y Redes Sociales) en puntos de resolución inmediata. Nuestros chatbots intuitivos ayudan a recibir, perfilar y atender solicitudes frecuentes de usuarios de forma fácil y conversacional.
+                        </p>
+                        <div class="p-4 bg-darkBg/60 rounded-xl border border-borderGray">
+                            <h4 class="text-xs font-bold text-neonPurple uppercase mb-1">Caso de Éxito Real: Retail y Logística de Envíos</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Una gran compañía de retail integró los chatbots automatizados de Davax en su canal de WhatsApp, resolviendo exitosamente el ochenta y cinco por ciento de las interacciones de forma fácil sin derivar a humanos.
+                            </p>
+                        </div>
+
+                        <!-- KPIs -->
+                        <div class="grid grid-cols-3 gap-4 p-4 bg-darkBg/40 border border-borderGray/60 rounded-xl">
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">85%</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Autoresolución</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">24/7</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Disponibilidad</div>
+                            </div>
+                            <div>
+                                <div class="text-xl sm:text-2xl font-black text-neonGreen">0 Mins</div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Tiempo de Espera</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <button id="escuchar-4" onclick="narrarCaso('Solución cuatro. Chatbots Omnicanal de Davax. En el caso de éxito de retail, los kpis confirman una tasa de autoresolución en whatsapp del ochenta y cinco por ciento de los clientes.', '4')" 
+                                    class="px-5 py-3 bg-darkBg border border-borderGray hover:border-neonPurple text-neonPurple text-xs font-bold rounded-xl transition-colors flex items-center gap-2">
+                                🔊 Escuchar Caso e Indicadores
+                            </button>
+                            <button id="detener-4" onclick="detenerVoz('4')" 
+                                    class="hidden px-4 py-3 bg-darkBg border border-borderGray hover:border-neonRed hover:text-neonRed text-gray-400 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5">
+                                ⏹️ Detener
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 aspect-video bg-darkBg rounded-2xl overflow-hidden border border-borderGray">
+                        <iframe class="w-full h-full opacity-80" src="https://www.youtube.com/embed/dQw4w9WgXcQ?mute=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE TECNOLOGÍA BASE -->
+    <section id="conocimiento" class="py-24 bg-cardBg border-t border-b border-borderGray relative">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-bold uppercase tracking-widest text-neonPurple block mb-3">PERSPECTIVA TÉCNICA AVANZADA</span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">Comprendiendo la Próxima Década de <span class="gradient-text">Eficiencia con Davax</span></h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <div class="lg:col-span-6 bg-darkBg border border-borderGray p-8 rounded-3xl flex flex-col justify-between glow-card">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 bg-neonBlue/10 text-neonBlue rounded-2xl flex items-center justify-center text-xl font-bold">01</div>
+                        <h3 class="text-2xl font-bold text-white">Agentic IA: El Salto de la Asistencia a la Autonomía</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Las organizaciones globales están implementando <strong>IA Agéntica</strong> porque introduce sistemas capaces de planificar tareas, utilizar herramientas mediante APIs y corregir sus propios errores de manera autónoma.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 bg-darkBg border border-borderGray p-8 rounded-3xl flex flex-col justify-between glow-card">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 bg-neonPurple/10 text-neonPurple rounded-2xl flex items-center justify-center text-xl font-bold">02</div>
+                        <h3 class="text-2xl font-bold text-white">¿Cómo potencializar Agentic IA?</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Para potenciar un agente al máximo, se requiere dotarlo de memoria persistente mediante bases de datos vectoriales y arquitecturas multi-agente donde se auditen sus ejecuciones en tiempo real.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-12 bg-darkBg border border-borderGray p-8 sm:p-12 rounded-3xl glow-card">
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-medium bg-cyan-950 text-neonBlue border border-cyan-900">Explicación de Experto en IA</div>
+                        <h3 class="text-2xl font-bold text-white">3. Hiperautomatización: Convergencia de Cognición y Ejecución</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            "Defino la hiperautomatización corporativa como la inyección de un 'cerebro cognitivo' sobre las 'manos ejecutoras' que representan las automatizaciones RPA tradicionales, conectando flujos complejos de extremo a extremo."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORMULARIO DE CONTACTO Y CONVERSIÓN -->
+    <section id="contacto" class="py-24 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- Tarjeta de Comunicación Directa con WhatsApp -->
+            <div class="lg:col-span-5 bg-cardBg p-8 rounded-3xl border border-borderGray space-y-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-neonPurple/5 rounded-full blur-2xl"></div>
+                <div class="space-y-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-neonBlue bg-darkBg px-3 py-1 rounded-md border border-borderGray">Atención Corporativa Directas</span>
+                        <h3 class="text-3xl font-extrabold text-white mt-4">Habla con nuestro Team</h3>
+                        <!-- <p class="text-sm font-semibold text-neonPurple tracking-wide">AI Product Manager</p> -->
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        "Estructuramos ecosistemas eficientes donde los Agentes Autónomos de Davax interpretan la necesidad del usuario y la automatización robótica procesa la información en tus sistemas core."
+                    </p>
+                </div>
+                
+                <a href="https://wa.me/573169316077?text=Hola%20Luz%20Marina,%20vi%20las%20soluciones%20de%20IA%20y%20RPA%20de%20Davax%20en%20el%20sitio%20web%20y%20deseo%20una%20consultor%C3%ADa." 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="w-full py-4 bg-gradient-to-r from-emerald-500 to-whatsappGreen text-white font-bold rounded-xl text-center block text-sm transition-transform hover:scale-[1.02] active:scale-[0.98] glow-whatsapp">
+                    💬 Chatear directo con AI Product Manager
+                </a>
+            </div>
+
+            <!-- Formulario Corporativo -->
+            <div class="lg:col-span-7 bg-cardBg p-8 rounded-3xl border border-borderGray shadow-xl">
+                <form class="space-y-6" onsubmit="enviarFormulario(event)">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-semibold text-gray-400">Nombre Completo</label>
+                            <input type="text" placeholder="Ej. Juan Pérez" required class="w-full bg-darkBg border border-borderGray rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-neonBlue transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-semibold text-gray-400">Correo Corporativo</label>
+                            <input type="email" placeholder="ejemplo@empresa.com" required class="w-full bg-darkBg border border-borderGray rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-neonBlue transition-colors">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-semibold text-gray-400">Requerimiento Operativo</label>
+                        <textarea rows="4" placeholder="Describe qué flujos o canales deseas automatizar con Davax..." class="w-full bg-darkBg border border-borderGray rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-neonBlue transition-colors"></textarea>
+                    </div>
+
+                    <!-- CAPTCHA -->
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-3.5 h-3.5 text-neonBlue flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Verificación de Seguridad</label>
+                        </div>
+
+                        <div class="bg-darkBg border border-borderGray rounded-2xl p-4 space-y-3">
+                            <p class="text-xs text-gray-500">Ingresa los 4 caracteres que aparecen en la imagen para confirmar que no eres un bot.</p>
+
+                            <div class="flex items-center gap-3">
+                                <!-- Canvas del CAPTCHA -->
+                                <div class="relative flex-shrink-0">
+                                    <canvas id="captcha-canvas" width="168" height="56" class="rounded-xl"></canvas>
+                                </div>
+
+                                <!-- Botón refrescar -->
+                                <button type="button" onclick="generarCaptcha()" title="Generar nuevo código"
+                                        class="flex-shrink-0 p-2.5 bg-cardBg border border-borderGray rounded-xl text-gray-400 hover:text-neonBlue hover:border-neonBlue transition-all duration-200 group">
+                                    <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <path d="M1 4v6h6"/><path d="M23 20v-6h-6"/>
+                                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Input del código -->
+                                <input id="captcha-input"
+                                       type="text"
+                                       maxlength="4"
+                                       placeholder="_ _ _ _"
+                                       autocomplete="off"
+                                       oninput="validarCaptchaInput(this)"
+                                       class="flex-1 bg-cardBg border border-borderGray rounded-xl px-4 py-3 text-sm text-white text-center font-black focus:outline-none transition-all duration-200 tracking-widest uppercase">
+                            </div>
+
+                            <!-- Mensaje de error -->
+                            <div id="captcha-error" class="hidden flex items-center gap-2 px-3 py-2 bg-neonRed/10 border border-neonRed/30 rounded-lg">
+                                <svg class="w-3.5 h-3.5 text-neonRed flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <p class="text-xs text-neonRed font-semibold">Código incorrecto. Se ha generado uno nuevo, intenta de nuevo.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-neonBlue to-neonPurple text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-opacity">Enviar Solicitud Técnica</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-borderGray bg-darkBg py-8 text-center text-xs text-gray-500 tracking-wide">
+        &copy; 2026 Davax AI. Dirección de Soluciones: Luz Marina Cifuentes. Bogotá, Colombia.
+    </footer>
+
+</body>
+</html>
