@@ -384,12 +384,14 @@
                 <a href="#conocimiento" class="hover:text-neonBlue transition-colors">Tecnología Base</a>
                 <a href="#contacto" class="hover:text-neonBlue transition-colors">Contacto Directo</a>
             </nav>
+            <a href="#contacto" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-darkBg bg-neonBlue rounded-lg hover:bg-white transition-all duration-300">Mesa Estratégica</a>
         </div>
     </header>
 
     <!-- HERO SECTION -->
-    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(0,240,255,0.07),transparent_60%)]"></div>
+    <section id="hero-section" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <canvas id="hero-particles" class="absolute inset-0 w-full h-full" style="z-index:0; pointer-events:none;"></canvas>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,transparent_30%,#05070F_85%)]" style="z-index:1; pointer-events:none;"></div>
         <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
             <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-cardBg text-neonBlue border border-borderGray mb-8">
                 <span class="w-2 h-2 rounded-full bg-neonBlue animate-pulse"></span> Ecosistema de Automatización Omnicanal Avanzada
@@ -661,11 +663,12 @@
                 <div class="space-y-6">
                     <div>
                         <span class="text-xs font-bold uppercase tracking-wider text-neonBlue bg-darkBg px-3 py-1 rounded-md border border-borderGray">Atención Corporativa Directas</span>
+                        </br></br>
                         <h3 class="text-3xl font-extrabold text-white mt-4">Habla con nuestro Team</h3>
-                        <!-- <p class="text-sm font-semibold text-neonPurple tracking-wide">AI Product Manager</p> -->
+                        <!-- <p class="text-sm font-semibold text-neonPurple tracking-wide">Manager IA & Arquitecta de Soluciones Davax</p> -->
                     </div>
                     <p class="text-gray-400 text-sm leading-relaxed">
-                        "Estructuramos ecosistemas eficientes donde los Agentes Autónomos de Davax interpretan la necesidad del usuario y la automatización robótica procesa la información en tus sistemas core."
+                        "Estructuramos ecosistemas eficientes donde los Agentes Autónomos de Davax interpretan la necesidad del usuario y la automatización robótica procesa la información en tus sistemas core con flujos de trabajo."
                     </p>
                 </div>
                 
@@ -673,7 +676,7 @@
                    target="_blank" 
                    rel="noopener noreferrer"
                    class="w-full py-4 bg-gradient-to-r from-emerald-500 to-whatsappGreen text-white font-bold rounded-xl text-center block text-sm transition-transform hover:scale-[1.02] active:scale-[0.98] glow-whatsapp">
-                    💬 Chatear directo con AI Product Manager
+                    💬 Chatear directo con Davax AI
                 </a>
             </div>
 
@@ -746,8 +749,146 @@
 
     <!-- FOOTER -->
     <footer class="border-t border-borderGray bg-darkBg py-8 text-center text-xs text-gray-500 tracking-wide">
-        &copy; 2026 Davax AI. Dirección de Soluciones: Luz Marina Cifuentes. Bogotá, Colombia.
+        &copy; 2026 Davax AI - Dirección de Soluciones - Bogotá, Colombia.
     </footer>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HERO PARTICLE ANIMATION — Campo de Partículas
+         Responsivo, con interacción de mouse y densidad adaptativa
+    ═══════════════════════════════════════════════════════════════ -->
+    <script>
+    (function () {
+        const canvas = document.getElementById('hero-particles');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        let pts = [], W = 0, H = 0;
+        let mx = -9999, my = -9999; // posición del mouse
+
+        // ── Colores del sistema Davax ──────────────────────────────
+        const COLORS = ['#00F0FF', '#00F0FF', '#9B5DE5', '#FFFFFF', '#00F0FF'];
+
+        // ── Inicializa/reinicia partículas al cambiar tamaño ───────
+        function resize() {
+            W = canvas.parentElement.offsetWidth;
+            H = canvas.parentElement.offsetHeight;
+            canvas.width  = W;
+            canvas.height = H;
+
+            // Densidad adaptativa: menos partículas en móvil
+            const density = window.innerWidth < 768 ? 16000 : 9000;
+            const count   = Math.max(45, Math.min(160, Math.floor(W * H / density)));
+
+            pts = Array.from({ length: count }, () => ({
+                x:   Math.random() * W,
+                y:   Math.random() * H,
+                vx:  (Math.random() - 0.5) * 0.5,
+                vy:  (Math.random() - 0.5) * 0.5,
+                r:   0.8 + Math.random() * 2.0,
+                col: COLORS[Math.floor(Math.random() * COLORS.length)],
+                a:   0.35 + Math.random() * 0.65,
+            }));
+        }
+
+        // ── Distancia máxima para trazar línea de conexión ─────────
+        function maxDist() { return Math.min(W, H) * 0.15; }
+
+        // ── Loop principal de animación ────────────────────────────
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            const md = maxDist();
+            const REPEL_R2 = 120 * 120; // radio² de repulsión del mouse
+
+            // Actualizar posiciones
+            pts.forEach(p => {
+                // Repulsión suave hacia el cursor
+                const dx = p.x - mx, dy = p.y - my;
+                const d2 = dx * dx + dy * dy;
+                if (d2 < REPEL_R2 && d2 > 1) {
+                    const d    = Math.sqrt(d2);
+                    const f    = ((REPEL_R2 - d2) / REPEL_R2) * 0.05;
+                    p.vx += (dx / d) * f;
+                    p.vy += (dy / d) * f;
+                }
+
+                // Límite de velocidad para mantener fluidez
+                const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if (spd > 1.4) { p.vx = (p.vx / spd) * 1.4; p.vy = (p.vy / spd) * 1.4; }
+
+                // Avanzar y envolver en bordes
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0)  p.x = W;
+                if (p.x > W)  p.x = 0;
+                if (p.y < 0)  p.y = H;
+                if (p.y > H)  p.y = 0;
+            });
+
+            // Líneas de conexión entre partículas cercanas
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < pts.length; i++) {
+                for (let j = i + 1; j < pts.length; j++) {
+                    const dx = pts[i].x - pts[j].x;
+                    const dy = pts[i].y - pts[j].y;
+                    const d  = Math.sqrt(dx * dx + dy * dy);
+                    if (d < md) {
+                        ctx.globalAlpha = (1 - d / md) * 0.28;
+                        ctx.strokeStyle = '#00F0FF';
+                        ctx.beginPath();
+                        ctx.moveTo(pts[i].x, pts[i].y);
+                        ctx.lineTo(pts[j].x, pts[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Puntos / partículas
+            pts.forEach(p => {
+                ctx.globalAlpha = p.a;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = p.col;
+                ctx.fill();
+            });
+
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(draw);
+        }
+
+        // ── Seguimiento del mouse dentro del hero ──────────────────
+        const hero = document.getElementById('hero-section');
+        if (hero) {
+            hero.addEventListener('mousemove', e => {
+                const r = hero.getBoundingClientRect();
+                mx = e.clientX - r.left;
+                my = e.clientY - r.top;
+            }, { passive: true });
+            hero.addEventListener('mouseleave', () => { mx = -9999; my = -9999; });
+        }
+
+        // ── Touch para móvil ───────────────────────────────────────
+        if (hero) {
+            hero.addEventListener('touchmove', e => {
+                const r = hero.getBoundingClientRect();
+                mx = e.touches[0].clientX - r.left;
+                my = e.touches[0].clientY - r.top;
+            }, { passive: true });
+            hero.addEventListener('touchend', () => { mx = -9999; my = -9999; });
+        }
+
+        // ── Resize responsivo ──────────────────────────────────────
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(resize, 150);
+        });
+
+        // ── Arranque ───────────────────────────────────────────────
+        resize();
+        draw();
+    })();
+    </script>
 
 </body>
 </html>
